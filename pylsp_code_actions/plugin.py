@@ -29,7 +29,7 @@ def pylsp_code_actions(
     parser = parso.parse(document.source)
     module = parser.get_root_node()
     for node in walk(module):
-        if not node.start_pos < cursor < node.end_pos:
+        if not node.start_pos <= cursor < node.end_pos:
             continue
 
         if isinstance(node, pytree.Function):
