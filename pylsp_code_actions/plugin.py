@@ -35,6 +35,9 @@ def pylsp_code_actions(
         if isinstance(node, pytree.Function):
             actions.extend(make_docstring_actions(document.uri, node))
 
+        elif isinstance(node, pytree.Operator):
+            actions.extend(make_flip_operator_action(document.uri, node))
+
     return actions
 
 
@@ -126,6 +129,52 @@ def make_docstring_actions(
                         "range": {"start": start, "end": start},
                         "newText": docstring,
                     }
+                ]
+            }
+        },
+    }
+
+
+def make_flip_operator_action(
+    uri: str, operator_node: pytree.Operator
+) -> cabc.Iterator[CodeAction]:
+    prev_node = operator_node.get_previous_sibling()
+    next_node = operator_node.get_next_sibling()
+    if prev_node is None or next_node is None:
+        return
+
+    yield {
+        "title": f"Flip operator '{operator_node.value}'",
+        "kind": "",
+        "edit": {
+            "changes": {
+                uri: [
+                    {
+                        "range": {
+                            "start": {
+                                "line": prev_node.start_pos[0] - 1,
+                                "character": prev_node.start_pos[1],
+                            },
+                            "end": {
+                                "line": prev_node.end_pos[0] - 1,
+                                "character": prev_node.end_pos[1],
+                            },
+                        },
+                        "newText": next_node.get_code(False),
+                    },
+                    {
+                        "range": {
+                            "start": {
+                                "line": next_node.start_pos[0] - 1,
+                                "character": next_node.start_pos[1],
+                            },
+                            "end": {
+                                "line": next_node.end_pos[0] - 1,
+                                "character": next_node.end_pos[1],
+                            },
+                        },
+                        "newText": prev_node.get_code(False),
+                    },
                 ]
             }
         },
