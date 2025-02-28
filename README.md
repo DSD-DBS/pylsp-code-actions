@@ -16,7 +16,7 @@ Handy code actions for python-lsp-server
 This is a plugin for `python-lsp-server` which adds a few handy code actions
 that I always missed:
 
-- [ ] Flip comma or other operand
+- [x] Flip comma or other operand
 - [ ] Sort keyword arguments by name
 - [ ] Order keyword arguments as in the called function
 - [ ] Sort dict literal by keys
